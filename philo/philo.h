@@ -27,8 +27,19 @@ typedef struct s_data
 	int		num_must_eat;
 }			t_data;
 
+typedef struct s_philo
+{
+	bool	is_eat;
+	int		t_eat;
+	int		c_eat;
+	int		id;
+	void	*data;
+}			t_philo;
+
 void	ft_putendl_fd(char *s, int fd);
+int		ft_strlen(char *s);
 int		error(char *str, int *err);
+int		init_data(t_data *data, char **av, int ac, int *err);
 int		checkatoi(char *str, int *err);
 
 #endif
