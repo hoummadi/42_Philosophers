@@ -19,11 +19,15 @@ FLAGS =  -Wall -Wextra -Werror -c
 SRCS =	philo.c		\
 		errors.c	\
 		atoi.c		\
+		init_data.c	\
+		time.c		\
 		tools.c
 
 OBJS =	philo.o		\
 		errors.o	\
 		atoi.o		\
+		init_data.o	\
+		time.o		\
 		tools.o
 
 all: $(NAME)
