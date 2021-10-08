@@ -26,8 +26,10 @@ typedef struct s_data
 	int				time_eat;
 	int				time_sleep;
 	int				num_must_eat;
+	int				num_eat;
 	long			start;
 	pthread_mutex_t	*fork;
+	pthread_mutex_t	*eat;
 	pthread_mutex_t	*display;
 }				t_data;
 
@@ -44,9 +46,11 @@ typedef struct s_philo
 void	ft_putendl_fd(char *s, int fd);
 int		ft_strlen(char *s);
 int		error(char *str, int *err);
+int		error2(char *str, t_philo *p);
 int		init_data(t_data *data, char **av, int ac, int *err);
 int		checkatoi(char *str, int *err);
 long	get_time(void);
 void	ft_usleep(int time);
+void	*rtn(void *arg);
 
 #endif

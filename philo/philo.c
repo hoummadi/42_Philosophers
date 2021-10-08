@@ -12,46 +12,58 @@
 
 #include "philo.h"
 
-void	*r(void	*arg)
-{
-	t_philo	*ph;
-	
-	ph = arg;
-	printf("HI, I'm %d\n", ph->id);
-	usleep(100);
-	return (0);
-}
-
-void	*sup(void	*arg)
+void	*sup(void *arg)
 {
 	t_philo	*ph;
 	int		i;
 	int		k;
-	
+
 	ph = arg;
-	printf("HI, I'm sup %d\n", ph[0].id);
 	i = 0;
-	k = 0;
-	printf("%ld\n", get_time() - ph[0].data->start);
+	k = (int)get_time();
 	while (1)
 	{
-		if (ph[i].is_eat == 0)
-			;
+		if (ph[i].is_eat == 0 && k - ph[i].t_eat >= ph[i].data->time_die)
+		{
+			pthread_mutex_lock(&ph->data->eat[i]);
+			pthread_mutex_lock(ph->data->display);
+			printf("%04ld %d dead |%d|\n", get_time() - ph->data->start, i + 1, (int)get_time() - ph[i].t_eat);
+			return (0);
+		}
 		i = (i + 1) % ph[0].data->num_philo;
-		k++;
-		if (k == ph[0].data->num_philo * 1000)
-			break ;
+		if (i == 0)
+		{
+			if (ph[i].data->num_eat >= ph[i].data->num_philo)
+			{
+				pthread_mutex_lock(ph->data->display);
+				printf("%04ld stop |%d| ****\n", get_time() - ph->data->start, ph->data->num_eat);
+				return (0);
+			}
+			ft_usleep(500);
+			k = (int)get_time();
+		}
 	}
-	printf("%ld\n", get_time() - ph[0].data->start);
 	return (0);
 }
 
-void	init_philo(t_philo *philo, t_data *data)
+static int	init_philo(t_philo *philo, t_data *data)
 {
 	int				i;
 
 	i = -1;
 	data->start = get_time();
+	data->fork = malloc(sizeof(pthread_mutex_t) * data->num_philo);
+	data->eat = malloc(sizeof(pthread_mutex_t) * data->num_philo);
+	data->display = malloc(sizeof(pthread_mutex_t));
+	if (!(data->fork) || !(data->eat) || !(data->display))
+		return (error2("MALLOC failed", philo));
+	while (++i < data->num_philo)
+	{
+		pthread_mutex_init(&(data->fork[i]), NULL);
+		pthread_mutex_init(&(data->eat[i]), NULL);
+	}
+	pthread_mutex_init(data->display, NULL);
+	i = -1;
 	while (++i < data->num_philo)
 	{
 		philo[i].id = i;
@@ -60,36 +72,35 @@ void	init_philo(t_philo *philo, t_data *data)
 		philo[i].t_eat = data->start;
 		philo[i].c_eat = 0;
 	}
+	return (0);
 }
 
 int	start(t_data *data)
 {
 	t_philo			*philo;
+	pthread_t		ph;
 	int				i;
 
 	i = 0;
-	philo = malloc(sizeof(t_philo) * data->num_philo + 1);	//protect
-	init_philo(philo, data);
-
-	printf("%d\n", 0);
-
+	philo = malloc(sizeof(t_philo) * data->num_philo);
+	if (!philo)
+		return (error2("MALLOC failed", NULL));
+	if (init_philo(philo, data) == 1)
+		return (1);
 	while (i < data->num_philo)
 	{
-		pthread_create(&(philo[i].ph), NULL, &r, &philo[i]);
+		pthread_create(&(philo[i].ph), NULL, &rtn, &philo[i]);
 		i += 2;
 	}
+	usleep(100);
 	i = 1;
 	while (i < data->num_philo)
 	{
-		pthread_create(&(philo[i].ph), NULL, &r, &philo[i]);
+		pthread_create(&(philo[i].ph), NULL, &rtn, &philo[i]);
 		i += 2;
 	}
-	pthread_create(&(philo[data->num_philo].ph), NULL, &sup, philo);
-	pthread_join(philo[data->num_philo].ph, NULL);
-
-	// printf("%ld\n", get_time() - data->start);
-	ft_usleep(100*1000);
-	// printf("%ld\n", get_time() - data->start);
+	pthread_create(&ph, NULL, &sup, philo);
+	pthread_join(ph, NULL);
 	free(philo);
 	return (0);
 }
@@ -97,14 +108,21 @@ int	start(t_data *data)
 int	main(int ac, char **av)
 {
 	int		err;
-	t_data	data;
+	t_data	*data;
 
 	err = 0;
 	if (ac < 5 || ac > 6)
 		return (error("Wrong Numbre Of Arg", &err));
-	if (init_data(&data, av + 1, ac, &err) == 1)
+	data = malloc(sizeof(t_data));
+	if (!data)
+		return (error("MALLOC failed", &err));
+	if (init_data(data, av + 1, ac, &err) == 1)
 		return (1);
-	start(&data);
-	ft_putendl_fd("done", 1);
+	if (start(data) == 1)
+		return (1);
+	free(data->display);
+	free(data->eat);
+	free(data->fork);
+	free(data);
 	return (0);
 }

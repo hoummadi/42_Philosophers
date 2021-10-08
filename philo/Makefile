@@ -20,6 +20,7 @@ SRCS =	philo.c		\
 		errors.c	\
 		atoi.c		\
 		init_data.c	\
+		routine.c	\
 		time.c		\
 		tools.c
 
@@ -27,6 +28,7 @@ OBJS =	philo.o		\
 		errors.o	\
 		atoi.o		\
 		init_data.o	\
+		routine.o	\
 		time.o		\
 		tools.o
 

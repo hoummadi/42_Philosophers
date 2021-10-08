@@ -15,7 +15,7 @@
 long	get_time(void)
 {
 	struct timeval	t;
-	long 			usec;
+	long			usec;
 
 	gettimeofday(&t, NULL);
 	usec = ((t.tv_sec * 1000) + (t.tv_usec / 1000));
@@ -27,18 +27,12 @@ void	ft_usleep(int time)
 	int				t1;
 	int				old;
 	int				now;
-	struct timeval	t;
 
-	gettimeofday(&t, NULL);
-	old = t.tv_sec * 1000000 + t.tv_usec;
+	old = get_time();
+	time = time / 1000;
 	t1 = (time * 9) / 10;
-	usleep(t1);
-	gettimeofday(&t, NULL);
-	now = t.tv_sec * 1000000 + t.tv_usec;
+	usleep(t1 * 1000);
+	now = get_time();
 	while (now - old < time)
-	{
-		usleep((time - (now - old)) / 2);
-		gettimeofday(&t, NULL);
-		now = t.tv_sec * 1000000 + t.tv_usec;
-	}
+		now = get_time();
 }

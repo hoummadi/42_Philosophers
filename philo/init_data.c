@@ -22,8 +22,10 @@ int	init_data(t_data *data, char **av, int ac, int *err)
 		data->num_must_eat = checkatoi(av[4], err);
 	else
 		data->num_must_eat = -1;
+	data->num_eat = 0;
 	if (*err == 0 && (data->num_philo > 200 || data->num_philo < 1
-		|| data->time_die < 60 || data->time_eat < 60 || data->time_sleep < 60))
+			|| data->time_die < 60 || data->time_eat < 60
+			|| data->time_sleep < 60))
 		return (error("Bad Arg", err));
 	if (*err == 1)
 		return (1);

@@ -18,3 +18,10 @@ int	error(char *str, int *err)
 	*err = 1;
 	return (1);
 }
+
+int	error2(char *str, t_philo *p)
+{
+	ft_putendl_fd(str, 2);
+	free(p);
+	return (1);
+}
