@@ -48,6 +48,7 @@ int		ft_strlen(char *s);
 int		error(char *str, int *err);
 int		error2(char *str, t_philo *p);
 int		init_data(t_data *data, char **av, int ac, int *err);
+int		init_philo(t_philo *philo, t_data *data);
 int		checkatoi(char *str, int *err);
 long	get_time(void);
 void	ft_usleep(int time);

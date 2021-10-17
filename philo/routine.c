@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "philo.h"
-#include <errno.h>
-#include <string.h>
 
 void	take_forks(t_philo *ph)
 {
